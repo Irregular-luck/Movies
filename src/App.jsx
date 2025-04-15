@@ -5,6 +5,7 @@ import Spinner from '../components/Spinner'
 import MovieCard from '../components/MovieCard'
 import { useDebounce } from 'react-use';
 import { getTrendingMovies,updateSearchCount } from './appwrite.js'
+import MovieModal from '../components/MovieModal.jsx'
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY
@@ -19,13 +20,14 @@ const API_OPTIONS = {
 }
 
 const App = () => {
+
  const [searchTerm, setSearchTerm] = useState('')
  const [errorMessage, setErrorMessage] = useState('')
  const [movieList, setMovieList] = useState([])
  const [trendingMovies, setTrendingMovies] = useState([])
  const [isLoading, setIsLoading] = useState(false)
  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
-
+ const [selectedMovie, setSelectedMovie] = useState(null)
  //Debounces the search term to prevent making too many API request
  //by waiting for the user to stop typing for 500ms
  useDebounce(() => setDebouncedSearchTerm(searchTerm),500,[searchTerm])
@@ -133,7 +135,12 @@ loadTrendingMovies()
 
             {movieList.map((movie)=>{
               return(
-                <MovieCard key={movie.id} movie={movie} />
+                <MovieCard 
+                key={movie.id}
+                movie={movie}
+                onClick={()=> setSelectedMovie(movie)} 
+                 
+                 />
               )
             })}
            </ul>)}
@@ -147,6 +154,13 @@ loadTrendingMovies()
 
 
       </div>
+      {selectedMovie && (
+  <MovieModal
+    movie={selectedMovie}
+    onClose={() => setSelectedMovie(null)}
+  />
+)}
+
   </main>
   )
 }
